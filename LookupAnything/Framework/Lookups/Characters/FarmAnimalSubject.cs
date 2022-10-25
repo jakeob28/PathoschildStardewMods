@@ -45,12 +45,27 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.Lookups.Characters
 
             // calculate maturity
             bool isFullyGrown = animal.age.Value >= animal.ageWhenMature.Value;
-            int daysUntilGrown = 0;
-            SDate? dayOfMaturity = null;
-            if (!isFullyGrown)
+            List<string> growth = new();
+            List<string> produce = new();
+
+            if (isFullyGrown)
             {
-                daysUntilGrown = animal.ageWhenMature.Value - animal.age.Value;
-                dayOfMaturity = SDate.Now().AddDays(daysUntilGrown);
+                int daysUntilProduct = Math.Max(1, animal.daysToLay.Value - animal.daysSinceLastLay.Value);
+                int productionChance = (int) Math.Round(animal.fullness.Value / 200.0 * animal.happiness.Value / 70.0 * 100);
+
+                if (animal.currentProduce.Value > 0)
+                    produce.Add(I18n.Animal_Produce_ItemReady(this.GameHelper.GetObjectBySpriteIndex(animal.currentProduce.Value).DisplayName));
+                produce.Add(I18n.Animal_Produce_NextProduct(I18n.Generic_Days(daysUntilProduct)));
+                produce.Add(I18n.Animal_Produce_ProductionChance(productionChance, animal.fullness.Value, animal.happiness.Value));
+            }
+            else
+            {
+                int daysUntilGrown = animal.ageWhenMature.Value - animal.age.Value;
+                SDate dayOfMaturity = SDate.Now().AddDays(daysUntilGrown);
+                int growthChancePercent = Math.Min(100, (animal.fullness.Value - 30 / 170) * 100);
+
+                growth.Add(I18n.Animal_Growth_Time(I18n.Generic_Days(daysUntilGrown), this.Stringify(dayOfMaturity)));
+                growth.Add(I18n.Animal_Growth_Chance(growthChancePercent, animal.fullness.Value));
             }
 
             // yield fields
@@ -58,9 +73,10 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.Lookups.Characters
             yield return new PercentageBarField(I18n.Animal_Happiness(), animal.happiness.Value, byte.MaxValue, Color.Green, Color.Gray, I18n.Generic_Percent(percent: (int)Math.Round(animal.happiness.Value / (this.Constants.AnimalMaxHappiness * 1f) * 100)));
             yield return new GenericField(I18n.Animal_Mood(), animal.getMoodMessage());
             yield return new GenericField(I18n.Animal_Complaints(), this.GetMoodReason(animal));
-            yield return new ItemIconField(this.GameHelper, I18n.Animal_ProduceReady(), animal.currentProduce.Value > 0 ? this.GameHelper.GetObjectBySpriteIndex(animal.currentProduce.Value) : null, this.Codex);
-            if (!isFullyGrown)
-                yield return new GenericField(I18n.Animal_Growth(), $"{I18n.Generic_Days(count: daysUntilGrown)} ({this.Stringify(dayOfMaturity)})");
+            if (isFullyGrown)
+                yield return new GenericField(I18n.Animal_Produce(), "-" + string.Join($"{Environment.NewLine}-", produce));
+            else
+                yield return new GenericField(I18n.Animal_Growth(), string.Join($"{Environment.NewLine}-", growth));
             yield return new GenericField(I18n.Animal_SellsFor(), GenericField.GetSaleValueString(animal.getSellPrice(), 1));
         }
 

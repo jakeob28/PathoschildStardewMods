@@ -213,11 +213,17 @@
     "animal.happiness": "Happiness",
     "animal.mood": "Mood today",
     "animal.complaints": "Complaints",
-    "animal.produce-ready": "Produce ready",
+    "animal.produce": "Produce",
+    "animal.next-product": "Next product in",
     "animal.growth": "Growth",
     "animal.sells-for": "Sells for",
 
     // values
+    "animal.growth.time": "{{days}} until grown ({{date}})",
+    "animal.growth.chance": "{{chance}}% chance to age overnight (fullness {{fullness}}/200)",
+    "animal.produce.item-ready": "{{item}} ready",
+    "animal.produce.next-product": "Next product in {{days}}",
+    "animal.produce.production-chance": "{{chance}}% chance to produce one it's time (fullness {{fullness}}/200, happiness {{happiness}}/70)",
     "animal.complaints.hungry": "wasn't fed yesterday",
     "animal.complaints.left-out": "was left outside last night",
     "animal.complaints.new-home": "moved into new home",
