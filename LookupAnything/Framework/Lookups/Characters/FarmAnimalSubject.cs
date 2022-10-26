@@ -51,6 +51,8 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.Lookups.Characters
             if (isFullyGrown)
             {
                 int daysUntilProduct = Math.Max(1, animal.daysToLay.Value - animal.daysSinceLastLay.Value);
+                if (animal.type.Value.Equals("Sheep") && Game1.getFarmer(animal.ownerID.Value).professions.Contains(3) && daysUntilProduct > 1) // shepherd profession modifier
+                    daysUntilProduct--;
                 int productionChance = (int) Math.Round(animal.fullness.Value / 200.0 * animal.happiness.Value / 70.0 * 100);
 
                 if (animal.currentProduce.Value > 0)
